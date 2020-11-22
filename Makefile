@@ -1,7 +1,7 @@
 # Filename:		Makefile
-# Date:			11/08/2020
-# Author:		Stephen Perkins
-# Email:		stephen.perkins@utdallas.edu
+# Date:			11/22/2020
+# Author:		Junsik Seo
+# Email:		jxs161930@utdallas.edu
 # Version:		1.0
 # Copyright:		2020, All Rights Reserved
 #
@@ -10,18 +10,14 @@
 #	A small project that will display a text based
 #	GUI based on Curses / CDK.
 
-
-# Set up needed values to support make's implicit commands
-# for compiling C++ source files.
-
 # The compiler to use
 CXX = g++
 
 # C pre-processor flags
-CPPFLAGS = -I /scratch/perkins/include
+CPPFLAGS = -I /scratch/perkins/include -std=c++11
 
 # compiler flags
-CXXFLAGS = -Wall
+CXXFLAGS = -Wall -Wno-write-strings
 
 # linker flags
 LDFLAGS = -L /scratch/perkins/lib
@@ -30,16 +26,11 @@ LDFLAGS = -L /scratch/perkins/lib
 LDLIBS = -lcdk -lcurses
 
 # Project name.  This is used in building the file name for the backup target
-PROJECTNAME = CDKExample
+PROJECTNAME = CDK
 
 # Enter the name for the executable to be created
-EXEC = cdkexample
+EXEC = cdk
 
-#
-# ======================================================
-#   Traditionally, we don't need to modify much below here.
-# =====================================================
-#
 SRCS = $(wildcard *.cc)
 HEADERS = $(wildcard *.h)
 OBJS := $(patsubst %.cc,%.o,$(SRCS))
@@ -59,13 +50,6 @@ clean:
 	rm -f $(OBJS) *.d *~ $(EXEC)
 
 
-#
-# This is more sophisticated than most.  Here, we use the preprocessor
-# to create "dependency" files.  The dependency files include all the
-# header files that any given .cc file #includes.    The idea is that
-# if any header file changes, we need to recompile all the .cc files
-# that included the header file.
-
 # Pattern for .d files.
 %.d:%.cc
 	@echo Updating .d Dependency File
@@ -79,11 +63,6 @@ clean:
 
 $(EXEC): $(OBJS)
 	$(CXX) -o $(EXEC) $(OBJS) $(LDFLAGS) $(LDLIBS)
-
-# There is magic here.  Read the man page to learn how a make handles
-# a target named Makefile.  This is the magic that allows make to "restart"
-# if it had to change (or create) any .d files.  The "restart" allows make
-# to re-read the dependency files after that were created or changed.
 
 Makefile: $(SRCS:.cc=.d)
 
@@ -101,11 +80,6 @@ backup:	clean
 	@echo
 	@echo Done!
 
-
-# Include the dependency files created by the PreProcessor.  The
-# dash in front of the command keeps the system from complaining
-# if the files do not exist.  This rule is used in conjunction
-# with the magic "Makefile" target above.
 
 -include $(SRCS:.cc=.d)
 
